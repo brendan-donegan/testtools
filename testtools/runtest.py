@@ -70,6 +70,16 @@ class RunTest(object):
             actual_result.startTestRun()
         else:
             actual_result = result
+        
+        test_method = self.case._get_test_method()
+        if (getattr(self.case, "__unittest_skip__", False) or
+            getattr(test_method, "__unittest_skip__", False)):
+            # If the class or method was skipped.
+            skip_why = (getattr(self.case, '__unittest_skip_why__', '')
+                        or getattr(test_method, '__unittest_skip_why__', ''))
+            self.case._addSkip(actual_result, skip_why)
+            return
+            
         try:
             return self._run_one(actual_result)
         finally:
